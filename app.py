@@ -1,5 +1,6 @@
 import os
 import openai
+import requests
 from flask import Flask, redirect, render_template, request, url_for, jsonify
 
 app = Flask(__name__)
@@ -14,20 +15,26 @@ def clear_conversation():
         {"role":"system", "content": "你是一个理智而幽默的的个人助理"},
     ]
 
+
+request = dingtalk.api.OapiGettokenRequest("https://oapi.dingtalk.com/user/get")
+request.userid="userid1"
+response = request.getResponse()
+print(response)
+
 @app.route("/dingtalk", methods=["POST"])
 def dingtalk():
     print(request.json)
     msg = request.json;
     if msg["msgtype"] == "text":
         content = msg["text"]["content"]
+        sessionWebhook = msg["sessionWebhook"]
+        data = {}
+        text = {}
+        data["msgtype"] = "text"
+        data["text"] = text
         if content == "新会话":
             clear_conversation()
-            data = {}
-            data["msgtype"] = "text"
-            text = {}
             text["content"] = "好的"
-            data["text"] = text
-            return jsonify(data)
         else:
             conversation.append({"role":"user", "content":"{}".format(content)})
             print(conversation)
@@ -40,12 +47,9 @@ def dingtalk():
             answer = response.choices[0].message.content
             print(answer)
             conversation.append({"role":"assistant", "content":"{}".format(answer)})
-            data = {}
-            data["msgtype"] = "text"
-            text = {}
             text["content"] = answer
-            data["text"] = text
-            return jsonify(data)
+        requests.post(sessionWebhook, json=data)
+        
 
 @app.route("/", methods=("GET", "POST"))
 def index():
