@@ -9,14 +9,17 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 @app.route("/", methods=("GET", "POST"))
 def index():
     if request.method == "POST":
-        print(request.form)
         prompt = request.form["prompt"]
         print(prompt)
-        # response = openai.ChatCompletion.create(
-        #     model="gpt-4",
-        #     prompt=generate_prompt(animal),
-        #     temperature=0.6,
-        # )
+        response = openai.ChatCompletion.create(
+            model="gpt-4",
+            messages = [
+                {"role":"system", "content": "你是一个理智而幽默的的个人助理"},
+                {"role":"user", "content":"{}".format(prompt)},
+            ],
+            prompt=generate_prompt(prompt),
+            temperature=0.6,
+        )
         return redirect(url_for("index", result=prompt))
 
     result = request.args.get("result")
