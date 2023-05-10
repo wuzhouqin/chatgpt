@@ -19,6 +19,7 @@ def index():
             ],
             temperature=0.6,
         )
+        print(response)
         return redirect(url_for("index", result=prompt))
 
     result = request.args.get("result")
