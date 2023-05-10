@@ -1,10 +1,21 @@
 import os
-
+import json
 import openai
 from flask import Flask, redirect, render_template, request, url_for
 
 app = Flask(__name__)
 openai.api_key = os.getenv("OPENAI_API_KEY")
+
+@app.route("/dingtalk/", methods=("POST"))
+def dingtalk():
+    print(request.json)
+    msg = request.json;
+    if msg.msgtype == "text":
+        content = msg.text.content
+        data = {}
+        data["msgtype"] = msg.msgtype
+        data["text"] = msg.text
+        return json.dumps(data)
 
 @app.route("/", methods=("GET", "POST"))
 def index():
