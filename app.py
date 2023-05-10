@@ -15,23 +15,18 @@ def clear_conversation():
         {"role":"system", "content": "你是一个理智而幽默的的个人助理"},
     ]
 
-
-request = dingtalk.api.OapiGettokenRequest("https://oapi.dingtalk.com/user/get")
-request.userid="userid1"
-response = request.getResponse()
-print(response)
-
 @app.route("/dingtalk", methods=["POST"])
 def dingtalk():
     print(request.json)
     msg = request.json;
+    data = {}
+    text = {}
+    data["msgtype"] = "text"
+    data["text"] = text
+    
     if msg["msgtype"] == "text":
         content = msg["text"]["content"]
         sessionWebhook = msg["sessionWebhook"]
-        data = {}
-        text = {}
-        data["msgtype"] = "text"
-        data["text"] = text
         if content == "新会话":
             clear_conversation()
             text["content"] = "好的"
@@ -49,7 +44,10 @@ def dingtalk():
             conversation.append({"role":"assistant", "content":"{}".format(answer)})
             text["content"] = answer
         requests.post(sessionWebhook, json=data)
-        
+        return jsonify({})
+    else:
+        text["content"] = "不支持回复此消息"
+        return jsonify(data)
 
 @app.route("/", methods=("GET", "POST"))
 def index():
