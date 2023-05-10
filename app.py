@@ -22,6 +22,7 @@ def dingtalk():
         content = msg["text"]["content"]
         if content == "新会话":
             clear_conversation()
+            data = {}
             data["msgtype"] = "text"
             text = {}
             text["content"] = "好的"
@@ -29,13 +30,17 @@ def dingtalk():
             return jsonify(data)
         else:
             conversation.append({"role":"user", "content":"{}".format(content)})
+            print(conversation)
             response = openai.ChatCompletion.create(
                 model="gpt-4",
                 messages = conversation,
                 temperature=0.6,
             )
+            print(response)
             answer = response.choices[0].message.content
+            print(answer)
             conversation.append({"role":"assistant", "content":"{}".format(answer)})
+            data = {}
             data["msgtype"] = "text"
             text = {}
             text["content"] = answer
