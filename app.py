@@ -20,7 +20,7 @@ def index():
             temperature=0.6,
         )
         print(response)
-        return redirect(url_for("index", result=prompt))
+        return render_template("index.html", result=response.choices[0].message.content)
 
     result = request.args.get("result")
     return render_template("index.html", result=result)
